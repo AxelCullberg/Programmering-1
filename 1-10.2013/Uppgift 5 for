@@ -1,0 +1,60 @@
+package 
+{
+	import flash.display.Sprite;
+	import flash.events.Event;
+	import flash.text.TextField;
+	
+	/**
+	 * ...
+	 * @author Axel Cullberg
+	 */
+	public class Main extends Sprite 
+	{	
+		
+		public var playerName:String = "Beowulf";
+		public var playerHP:int = 280;
+		public var playerDmg:int = 30;
+		public var playerDmgDealt:int;
+		
+		public var enemyName:String = "Grendel";
+		public var enemyHP:int = 150;
+		public var enemyDmg:int = 17;
+		public var enemyDmgDealt:int;
+		
+		
+		public function Main():void 
+		{
+			if (stage) init();
+			else addEventListener(Event.ADDED_TO_STAGE, init);
+		}
+		
+		private function init(e:Event = null):void 
+		{
+			removeEventListener(Event.ADDED_TO_STAGE, init);
+			// entry point
+			var t:TextField = new TextField();
+			
+			t.height = 2000; 
+			t.width = 500;
+			addChild(t);
+			for (var i:int = 1; i <= 5; i++) // loopar fem gånger
+			{
+				t.appendText("|Round " + String(i) + "|\n"); // omgången
+				t.appendText(playerName + "'s HP: " + playerHP + "\n"); // hjältens hp
+				t.appendText(enemyName + "'s HP: " + enemyHP + "\n"); // Fiendens hp
+				
+				enemyDmgDealt = enemyDmg * Math.random() + enemyDmg; // Skada som fienden tillfogar
+				playerDmgDealt = playerDmg * Math.random() + playerDmg; // Skada som hjälten tillfogar
+				
+				t.appendText(playerName + " deals " + String(playerDmgDealt) + " damage to " + enemyName + "\n"); // Hur mycket skada hjälten tillfogar fienden
+				t.appendText(enemyName + " deals " + String(enemyDmgDealt) + " damage to " + playerName + "\n\n"); // Hur mycket skada fienden tillfogar hjälten
+				
+				playerHP = playerHP - enemyDmgDealt; //Skadan som tillförs
+				enemyHP = enemyHP - playerDmgDealt;
+				
+			}
+		}
+		
+	}
+	
+}
