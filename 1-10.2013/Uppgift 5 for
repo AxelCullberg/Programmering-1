@@ -39,7 +39,14 @@ package
 			addChild(t);
 			for (var i:int = 1; i <= 5; i++) // loopar fem gånger
 			{
-				t.appendText("|Round " + String(i) + "|\n"); // omgången
+				if (playerHP <= 0) {
+					t.appendText(playerName + " died! The game is over!");
+					break;
+				} else if (enemyHP <= 0) {
+					t.appendText(enemyName + " died! The game is over!");
+					break;
+				}
+				t.appendText("| Round " + String(i) + " |\n"); // omgången
 				t.appendText(playerName + "'s HP: " + playerHP + "\n"); // hjältens hp
 				t.appendText(enemyName + "'s HP: " + enemyHP + "\n"); // Fiendens hp
 				
