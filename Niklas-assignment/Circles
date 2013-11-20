@@ -1,0 +1,81 @@
+package 
+{
+	import flash.display.Sprite;
+	import flash.events.Event;
+	import flash.events.FocusEvent;
+	import flash.events.KeyboardEvent;
+	import flash.events.MouseEvent;
+	import flash.text.TextField;
+	
+	/**
+	 * ...
+	 * @author Axel Cullberg
+	 */
+	public class Main extends Sprite 
+	{
+		
+		private var ar:Array = new Array();
+		private var points:int = 0;
+		private var score:TextField	= new TextField();
+		private var gameOver:TextField = new TextField();
+		
+		public function Main():void 
+		{
+			if (stage) init();
+			else addEventListener(Event.ADDED_TO_STAGE, init);
+		}
+		private function removeCircle(key:MouseEvent):void
+		{
+			if (ar.indexOf(key.target) == 0)
+			{
+				while (ar.length > 0) 
+				{
+					removeChild(ar[0]);
+					ar.splice(0, 1);
+				}
+				gameOver.text = "Game over!" + "\n" + "Your score is: " + String(points);
+				gameOver.x = stage.stageWidth / 2;
+			}
+			else 
+			{
+				key.target.visible = false;
+				points +=1;
+				score.text = "Points: " + points;
+			}
+		}
+		
+		private function spawnCircles(key:KeyboardEvent):void
+		{
+			if (key.keyCode == 32)
+			{
+				while (ar.length > 0) 
+				{
+					removeChild(ar[0]);
+					ar.splice(0, 1);
+				}
+				points = 0;
+				gameOver.text = "";
+				for (var i:int = 0; i < 20; i++) 
+				{
+					var myCircle:Sprite	= new Sprite();
+					myCircle.graphics.beginFill( Math.random () *0xFF794B);
+					myCircle.graphics.drawCircle(0, 0, 30);
+					myCircle.graphics.endFill();
+					myCircle.x = stage.stageWidth * Math.random();
+					myCircle.y = stage.stageHeight * Math.random();
+					addChild(myCircle);
+					ar.push(myCircle);
+					myCircle.addEventListener(MouseEvent.CLICK, removeCircle);	
+				}
+			}
+		}
+		private function init(e:Event = null):void 
+		{
+			removeEventListener(Event.ADDED_TO_STAGE, init);
+			// entry point
+			stage.addEventListener(KeyboardEvent.KEY_DOWN, spawnCircles);
+			addChild(score);
+			addChild(gameOver);
+		}
+	}
+}
