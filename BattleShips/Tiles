@@ -1,0 +1,28 @@
+package  
+{
+	import flash.display.Bitmap;
+	import flash.display.Sprite;
+	/**
+	 * ...
+	 * @author Axel Cullberg
+	 */
+	public class Tile extends Sprite
+	{
+		
+		[Embed(source = '../lib/water.png')]//Vattenbilden
+		public static var WaterImage:Class;
+		[Embed(source = '../lib/miss.png')]//Missbilden
+		public static var MissImage:Class;
+		[Embed(source = '../lib/hit.png')]//Träffbilden
+		public static var HitImage:Class;
+		public var tileIsAShip:Boolean = false;
+		public var tileIsAlreadyPressed:Boolean = false;
+		
+		public function Tile() //lägger ut vattenbilden på scenen
+		{
+			var waterTile:Bitmap = new WaterImage();
+			this.addChild(waterTile);	
+		}
+		
+	}
+}
