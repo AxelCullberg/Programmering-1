@@ -1,0 +1,138 @@
+package 
+{
+	import flash.display.Sprite;
+	import flash.events.Event;
+	import flash.events.KeyboardEvent;
+	import flash.events.MouseEvent;
+	import flash.geom.ColorTransform;
+	import flash.text.TextField;
+	import flash.ui.Keyboard;
+	import flash.ui.Mouse;
+	import flash.display.Bitmap;
+	/**
+	 * ...
+	 * @author Axel Cullberg
+	 */
+	public class Main extends Sprite 
+	{
+		
+		private var MapY:Vector.<Vector.<Tile>> = new Vector.<Vector.<Tile>>();
+		private var timesPressedAlreadyPressedButtons:int; 
+		private var shipSetOutX:int;
+		private var shipSetOutY:int;
+		private var xOrY:Number = Math.random();
+		private var shipHit:int;
+		private var shipHitText:TextField = new TextField;
+		private var shotsFired:int;
+		private var shotsFiredText:TextField = new TextField;
+		public function Main():void 
+		{
+			if (stage) init();
+			else addEventListener(Event.ADDED_TO_STAGE, init);
+		}
+		
+		private function init(e:Event = null):void 
+		{
+			removeEventListener(Event.ADDED_TO_STAGE, init);
+			// entry point
+			
+			stage.addEventListener(KeyboardEvent.KEY_DOWN, sceneMapY);
+			createMapY();
+		}
+		private function createMapY():void//skapar rutnätet		
+		{
+			for (var gridX:int = 0; gridX < 10; gridX++) 
+			{
+				var MapX:Vector.<Tile> = new Vector.<Tile>();
+					for (var gridY:int = 0; gridY < 10; gridY++) //Skapar en ruta på hundra olika ställen istället för att skriva 100 rutor individuellt.
+					{	
+						var Box:Tile = new Tile();
+						Box.x = 100 + gridY * (49);
+						Box.y = 100 + gridX * (49);
+						addChild(Box);
+						MapX.push(Box);
+						shotsFired = 0;
+						shipHit = 0;
+						shipHitText.text = "Ships Hit: " + shipHit;//Poängräknare
+						shotsFiredText.text = "Shots Fired: " + shotsFired;//Poängräknare
+						Box.addEventListener(MouseEvent.CLICK, clickedHitOrMiss); //lyssnare för träff och miss
+						shipSetOutX = Math.round(Math.random() * 9);
+						shipSetOutY = Math.round(Math.random() * 9);
+					}
+				MapY.push(MapX);
+			}
+			MapY[shipSetOutX][shipSetOutY].tileIsAShip = true;//Bestämmer om skeppet är vertikalt eller horisontellt. Jag tyckte att detta var den mest självklara lösningen
+			if (xOrY > 0.5)
+			{
+				if (shipSetOutY > 7)
+				{
+					MapY[shipSetOutX][shipSetOutY -1].tileIsAShip = true;
+					MapY[shipSetOutX][shipSetOutY -2].tileIsAShip = true;
+				}
+				else if (shipSetOutY < 7)
+				{
+					MapY[shipSetOutX][shipSetOutY +1].tileIsAShip = true;
+					MapY[shipSetOutX][shipSetOutY +2].tileIsAShip = true;
+				}	
+			}
+			else
+			{
+				if (shipSetOutY > 7)
+				{
+					MapY[shipSetOutX -1][shipSetOutY].tileIsAShip = true;
+					MapY[shipSetOutX -2][shipSetOutY].tileIsAShip = true;
+				}
+				else if (shipSetOutY < 7)
+				{
+					MapY[shipSetOutX +1][shipSetOutY].tileIsAShip = true;
+					MapY[shipSetOutX +2][shipSetOutY].tileIsAShip = true;
+				}	
+			}
+		}
+		private function sceneMapY(e:KeyboardEvent):void// Nollställer vid nedtryckning av spacebar, även detta den mest självklara lösningen.
+		{
+			if (e.keyCode == Keyboard.SPACE)
+			{
+				for ( var y:int = 0; MapY.length < y; y++)
+				{
+					for ( var x:int = 0; MapY.length < x; x++)
+					{
+						removeChild(MapY[y][x]);
+					}
+				}
+			}
+			MapY.length = 0;
+			createMapY();
+		}
+		
+		private function clickedHitOrMiss(e:MouseEvent):void// avgör om den klickade rutan är ett skepp eller vatten samt ökar poängen. Jag ändrade till denna lösning eftersom att jag tyckte att den var enklare.
+		{
+			if (Tile (e.target).tileIsAlreadyPressed)
+			{
+				timesPressedAlreadyPressedButtons ++;
+			}
+			else if (Tile(e.target).tileIsAShip)//träff
+			{
+				var waterBoxHit:Bitmap = new Tile.HitImage();
+				e.target.addChild(waterBoxHit);
+				e.target.tileIsAlreadyPressed = true;
+				shipHit++;
+				shipHitText.text = "Ships Hit: " + shipHit;
+				shotsFired++;
+				shotsFiredText.text = "Shots Fired: " + shotsFired;
+				shotsFiredText.y = 100;
+			}
+			else//miss
+			{
+				var waterBoxMiss:Bitmap = new Tile.MissImage();
+				e.target.addChild(waterBoxMiss);
+				e.target.tileIsAlreadyPressed = true;
+				shotsFired++;
+				shotsFiredText.text = "Shots Fired: " + shotsFired;
+				shotsFiredText.y = 100;
+			}
+			addChild(shipHitText);
+			addChild(shotsFiredText);
+		}
+	}
+}
